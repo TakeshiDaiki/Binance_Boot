@@ -76,6 +76,7 @@ Binance Credentials (.env)
 
 REAL_API_KEY=your_real_api_key_here
 REAL_SECRET_KEY=your_real_secret_key_here
+
 DEMO_API_KEY=your_testnet_api_key_here
 DEMO_SECRET_KEY=your_testnet_secret_key_here
 
