@@ -1,133 +1,162 @@
-# 🤖 Pantuflito-Bot - Automated Trading System
+Pantuflito-Bot - Automated Trading System
 
-A production-ready, automated trading bot featuring real-time market data analysis, comprehensive technical indicator integration, and enterprise-level architecture.  
-Built with **Python 3.10+, CCXT, and Pandas**.
+A production-ready automated trading bot featuring real-time market data analysis, technical indicator integration, and a scalable modular architecture. Built with Python 3.10+, CCXT and Pandas.
 
----
+🚀 Features
 
-## 🚀 Features
+🔐 Authentication & Securit
 
-### 🔐 Authentication & Security
-- API Key-based authentication for Binance integration  
-- Secure environment variable management via `.env`  
-- Automated `.gitignore` configuration for credential protection  
-- Built-in CCXT rate limiting for exchange safety  
-- Protected fallback mechanisms for environment loading  
+API Key-based authentication for Binance
 
-### 📊 Core Functionality
-- Real-time market data fetching (OHLCV)  
-- EMA 50/200 trend filtering logic  
-- RSI 50-level crossover momentum trigger  
-- Volume-based signal confirmation  
-- Automated position tracking and state management  
-- 1:2 Risk/Reward ratio execution (TP 1.5% / SL 0.75%)
+Secure environment variable management via .env
 
-### 🛠 Developer Experience
-- Modular architecture (Core / Logic / Config)  
-- PEP 8 compliant code structure  
-- Vectorized data processing with Pandas  
-- Comprehensive logging and real-time console feedback  
-- Centralized configuration management  
+Automated .gitignore configuration for credential protection
 
----
+Built-in CCXT rate limiting
 
-## 🛠️ Tech Stack
+Safe environment loading with fallback mechanisms
 
-### Backend
-- Runtime: Python 3.10+  
-- Exchange Library: CCXT  
-- Data Analysis: Pandas  
-- Environment: Python-Dotenv  
-- Market: Binance (Live & Testnet)
+⚙️ Core Functionality
 
-### DevOps
-- Version Control: Git & GitHub  
-- Configuration: `.env` management  
-- Dependencies: pip (`requirements.txt`)
+Real-time OHLCV market data fetching
 
----
+EMA 50/200 trend filtering
 
-## 📦 Installation
+RSI 50-level momentum trigger
 
-### Prerequisites
-- Python 3.10+  
-- pip  
-- Binance API Keys (Real or Testnet)
+Volume-based confirmation
 
-### Quick Start
+Automated position tracking
 
-```bash
+1:2 Risk/Reward ratio (TP 1.5% / SL 0.75%)
+
+🧑‍💻 Developer Experience
+
+Modular architecture (Core / Logic / Config)
+
+PEP8-compliant structure
+
+Vectorized data processing with Pandas
+
+Real-time logging
+
+Centralized configuration management
+
+🛠️ Tech Stack
+Backend
+
+Python 3.10+
+
+CCXT
+
+Pandas
+
+Binance API
+
+DevOps
+
+Git & GitHub
+
+.env configuration
+
+pip / requirements.txt
+
+📦 Installation
+Prerequisites
+
+Python 3.10+
+
+Binance API keys (Live or Testnet)
+
+🚀 Quick Start
+
 git clone https://github.com/TakeshiDaiki/Binance_Boot.git
 cd Binance_Boot
 pip install -r requirements.txt
 cp .env.example .env
 python main.py
+
 🔧 Environment Variables
-env
-Copiar código
+
+Create a .env file with the following structure:
 REAL_API_KEY=your_real_api_key_here
 REAL_SECRET_KEY=your_real_secret_key_here
 DEMO_API_KEY=your_testnet_api_key_here
 DEMO_SECRET_KEY=your_testnet_secret_key_here
-📚 Strategy Documentation
-🧠 Strategy Logic
-Indicator	Condition	Description
-EMA 50 / 200	EMA50 > EMA200	Long only trend filter
-EMA 50 / 200	EMA50 < EMA200	Short only trend filter
-RSI	Crosses 50	Momentum trigger
-Volume	Current > Avg(20)	Liquidity confirmation
-Take Profit	+1.5%	Exit in profit
-Stop Loss	-0.75%	Risk control
 
-📁 Project Structure
-text
-Copiar código
+📚 Strategy Documentation
+
+🧠 Strategy Logic
+| Indicator   | Condition      | Description            |
+| ----------- | -------------- | ---------------------- |
+| EMA 50/200  | EMA50 > EMA200 | Long trend filter      |
+| EMA 50/200  | EMA50 < EMA200 | Short trend filter     |
+| RSI         | Crosses 50     | Momentum trigger       |
+| Volume      | > Avg(20)      | Liquidity confirmation |
+| Take Profit | +1.5%          | Exit in profit         |
+| Stop Loss   | -0.75%         | Risk control           |
+
+## 📁 Project Structure
+
+```text
 Binance_Boot/
 ├── core/
-│   ├── exchange.py    # Connection logic & Order execution
-│   └── risk.py        # Risk management parameters
+│   ├── exchange.py
+│   └── risk.py
 ├── logic/
-│   ├── indicators.py  # Technical indicators (EMA, RSI, Volume)
-│   └── strategy.py    # Signal generation logic
-├── config.py          # Global configuration & symbols
-├── main.py            # Entry point & execution loop
-├── .env               # Private credentials (ignored)
-├── .env.example       # Template for other developers
-├── .gitignore         # Version control security rules
-├── requirements.txt   # Dependency manifest
-└── README.md          # Project documentation
+│   ├── indicators.py
+│   └── strategy.py
+├── config.py
+├── main.py
+├── .env
+├── .env.example
+├── .gitignore
+├── requirements.txt
+└── README.md
+```
+
 🤝 Contributing
 Fork the repository
 
-Create a feature branch (git checkout -b feature/amazing-feature)
+Create a feature branch
 
-Commit your changes (git commit -m 'Add amazing feature')
+Commit your changes
 
-Push to the branch (git push origin feature/amazing-feature)
+Push to your branch
 
 Open a Pull Request
 
-📝 Scripts Reference
-Script	Description
-python main.py	Starts the main trading loop
-pip install -r requirements.txt	Installs all necessary libraries
-python -m pip install --upgrade pip	Updates project dependencies
+Scripts Reference
+| Command                             | Description             |
+| ----------------------------------- | ----------------------- |
+| python main.py                      | Starts the trading loop |
+| pip install -r requirements.txt     | Install dependencies    |
+| python -m pip install --upgrade pip | Upgrade pip             |
 
 📄 License
-This project is licensed under the MIT License - see the LICENSE file for details.
+
+This project is licensed under the MIT License.
 
 👤 Author
+
 Jose Salazar
+
 GitHub: https://github.com/TakeshiDaiki
+
 LinkedIn: https://www.linkedin.com/in/jose-salazar-60ab21283/
 
+⚠️ Important Note
+
+This is a demonstration and portfolio project.
+The strategy is functional, but the bot is provided as a test and showcase system only.
+It is not recommended to operate it in real trading environments without further validation, auditing and risk management.
+
 🙏 Acknowledgments
-CCXT team for the robust exchange library
 
-Pandas community for the data processing tools
+CCXT team for the exchange library
 
-Binance for the comprehensive API documentation
+Pandas community for data processing tools
 
-⚠️ Note:
-This is a portfolio/demonstration project.
-For production use, ensure proper risk assessment, security audits, and monitoring are in place.
+Binance for the API documentation
+
+
