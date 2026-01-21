@@ -81,17 +81,17 @@ DEMO_SECRET_KEY=your_testnet_secret_key_here
 
 📚 Strategy Documentation
 
-The bot implements a trend-following momentum strategy:
+## 🧠 Strategy Logic
 
-Key Logic
+| Indicator     | Condition         | Description               |
+|---------------|-------------------|---------------------------|
+| EMA 50 / 200  | EMA50 > EMA200    | Long only trend filter    |
+| EMA 50 / 200  | EMA50 < EMA200    | Short only trend filter   |
+| RSI           | Crosses 50        | Momentum trigger          |
+| Volume        | Current > Avg(20) | Liquidity confirmation    |
+| Take Profit   | +1.5%             | Exit in profit            |
+| Stop Loss     | -0.75%            | Risk control              |
 
-Method          Condition               Description
-EMA Filter      EMA 50 > EMA 200        Uptrend Filter (Longs only)
-EMA Filter      EMA 50 < EMA 200        Downtrend Filter (Shorts only)
-RSI Trigger     Crossover 50            Momentum confirmation
-Volume Check    Current > Avg(20)       Liquidity validation
-Take Profit     Price + 1.5%            Automated exit (Gain)
-Stop Loss       Price - 0.75%           Automated exit (Risk)
 
 📁 Project Structure
 
