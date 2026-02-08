@@ -1,27 +1,25 @@
-import config
-
+# No-spell-check: ZENVO
 
 def add_indicators(df):
-    """
-    Calculates technical indicators (EMA, RSI, and Average Volume)
-    using the parameters defined in the config file.
-    """
+    try:
+        # EMAs
+        df['ema50'] = df['close'].ewm(span=50, adjust=False).mean()
+        df['ema200'] = df['close'].ewm(span=200, adjust=False).mean()
 
-    # Calculate EMA (Exponential Moving Average)
-    # We use .ewm directly on the 'close' column of the dataframe
-    df['ema50'] = df['close'].ewm(span=config.EMA_FAST, adjust=False).mean()
-    df['ema200'] = df['close'].ewm(span=config.EMA_SLOW, adjust=False).mean()
+        # RSI 14 (Wilder's Smoothing)
+        delta = df['close'].diff()
+        gain = (delta.where(delta > 0, 0))
+        loss = (-delta.where(delta < 0, 0))
+        avg_gain = gain.ewm(alpha=1 / 14, adjust=False).mean()
+        avg_loss = loss.ewm(alpha=1 / 14, adjust=False).mean()
 
-    # Calculate Manual RSI (Relative Strength Index)
-    delta = df['close'].diff()
-    gain = (delta.where(delta > 0, 0)).rolling(window=config.RSI_PERIOD).mean()
-    loss = (-delta.where(delta < 0, 0)).rolling(window=config.RSI_PERIOD).mean()
+        rs = avg_gain / avg_loss
+        df['rsi'] = 100 - (100 / (1 + rs))
 
-    # Avoid division by zero
-    rs = gain / loss
-    df['rsi'] = 100 - (100 / (1 + rs))
+        # Volume Average
+        df['vol_avg'] = df['volume'].rolling(window=20).mean()
 
-    # Calculate Average Volume
-    df['vol_avg'] = df['volume'].rolling(window=config.VOL_PERIOD).mean()
-
-    return df
+        return df
+    except Exception as e:
+        print(f"Indicator Error: {e}")
+        return df

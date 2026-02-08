@@ -1,52 +1,69 @@
 import ccxt
 import pandas as pd
-import os
-from dotenv import load_dotenv
 
-load_dotenv()
 
-def get_connection(use_demo=True):
+class BinanceClient:
     """
-    Configures the connection with Binance.
-    The 'or ""' ensures the editor recognizes keys as strings.
+    Handles Binance API interactions with automatic LOT_SIZE normalization.
+    Standardized for Testnet and Real accounts.
     """
-    if use_demo:
-        api_key = os.getenv('DEMO_API_KEY') or ""
-        secret = os.getenv('DEMO_SECRET_KEY') or ""
-        mode_text = "🧪 DEMO MODE (Testnet)"
-    else:
-        api_key = os.getenv('REAL_API_KEY') or ""
-        secret = os.getenv('REAL_SECRET_KEY') or ""
-        mode_text = "💸 REAL MODE (Production)"
 
-    exchange = ccxt.binance({
-        'apiKey': api_key,
-        'secret': secret,
-        'enableRateLimit': True,
-        'options': {'defaultType': 'spot'}
-    })
+    def __init__(self, api_key="", secret_key="", mode="testnet"):
+        # adjustForTimeDifference prevents the common 'Timestamp for this request' error
+        self.exchange = ccxt.binance({
+            'apiKey': api_key,
+            'secret': secret_key,
+            'enableRateLimit': True,
+            'options': {
+                'defaultType': 'spot',
+                'adjustForTimeDifference': True
+            }
+        })
 
-    if use_demo:
-        exchange.set_sandbox_mode(True)
+        # Standardize mode check
+        if mode == "testnet":
+            self.exchange.set_sandbox_mode(True)
+            print("🌐 [SYSTEM] Connected to Binance TESTNET (Demo Mode)")
+        else:
+            print("💰 [SYSTEM] Connected to Binance REAL ACCOUNT")
 
-    print(f"\n✅ Successfully connected: {mode_text}")
-    return exchange
+    def create_order(self, symbol, side, amount_usd):
+        """
+        Executes a market order by converting USD amount to crypto quantity.
+        Uses exchange precision rules to avoid LOT_SIZE errors.
+        """
+        try:
+            self.exchange.load_markets()
+            ticker = self.exchange.fetch_ticker(symbol)
+            current_price = ticker['last']
 
-def fetch_data(exchange, symbol, timeframe):
-    """Fetches historical candlestick data (OHLCV)."""
-    try:
-        bars = exchange.fetch_ohlcv(symbol, timeframe=timeframe, limit=100)
+            if side == 'buy':
+                raw_amount = float(amount_usd) / current_price
+            else:
+                raw_amount = float(amount_usd)
+
+            # Normalizes amount according to Binance precision rules
+            precise_amount = self.exchange.amount_to_precision(symbol, raw_amount)
+
+            self.exchange.create_order(symbol, 'market', side, precise_amount)
+            return True
+
+        except (ccxt.NetworkError, ccxt.ExchangeError) as e:
+            print(f"\n❌ Order Error: {e}")
+            return False
+
+    def get_balance(self, asset="USDT"):
+        """Fetches the free balance of a specific asset."""
+        try:
+            bal = self.exchange.fetch_balance()
+            return float(bal.get(asset, {}).get('free', 0))
+        except Exception as e:
+            raise e
+
+    def get_klines(self, symbol, timeframe):
+        """Fetches OHLCV data and returns a formatted DataFrame."""
+        bars = self.exchange.fetch_ohlcv(symbol, timeframe=timeframe, limit=100)
         df = pd.DataFrame(bars, columns=['timestamp', 'open', 'high', 'low', 'close', 'volume'])
+        df['timestamp'] = pd.to_datetime(df['timestamp'], unit='ms')
+        df.set_index('timestamp', inplace=True)
         return df
-    except Exception as e:
-        print(f"❌ Error fetching data: {e}")
-        return pd.DataFrame()
-
-def place_order(exchange, symbol, side, amount):
-    """Executes a market order (buy/sell)."""
-    try:
-        order = exchange.create_market_order(symbol, side.lower(), amount)
-        return order
-    except Exception as e:
-        print(f"❌ Order error: {e}")
-        return None

@@ -1,34 +1,37 @@
-def generate_signal(df):
-    """
-    Generates trading signals based on EMA trend filter,
-    RSI crossovers, and volume confirmation.
-    """
-    # Verify if there is enough data for the EMA200
-    if len(df) < 200:
-        return 'HOLD'
+import pandas as pd
 
-    current = df.iloc[-1]   # Current candle (forming or last closed)
-    previous = df.iloc[-2]  # Previous candle
 
-    # 1. Trend Filter (EMA)
-    is_uptrend = current['ema50'] > current['ema200']
-    is_downtrend = current['ema50'] < current['ema200']
+# No-spell-check: ZENVO
 
-    # 2. Volume Confirmation
-    high_volume = current['volume'] > current['vol_avg']
+def calculate_indicators(df: pd.DataFrame) -> pd.DataFrame:
+    """Calculates indicators for the aggressive strategy."""
+    # 1. EMA 50 (Immediate Trend)
+    df['ema50'] = df['close'].ewm(span=50, adjust=False).mean()
 
-    # 3. RSI Crossover Logic (Simplified)
-    # LONG: RSI was below 50 and is now above or equal
-    rsi_buy = previous['rsi'] < 50 <= current['rsi']
+    # 2. RSI (Momentum)
+    delta = df['close'].diff()
+    gain = (delta.where(delta > 0, 0.0)).rolling(window=14).mean()
+    loss = (-delta.where(delta < 0, 0.0)).rolling(window=14).mean()
+    rs = gain / loss
+    df['rsi'] = 100 - (100 / (1 + rs))
 
-    # SHORT: RSI was above 50 and is now below or equal
-    rsi_sell = previous['rsi'] > 50 >= current['rsi']
+    return df
 
-    # Final Signal Logic
-    if is_uptrend and rsi_buy and high_volume:
-        return 'LONG'
 
-    if is_downtrend and rsi_sell and high_volume:
-        return 'SHORT'
+def get_signal(df: pd.DataFrame) -> str:
+    """Aggressive logic: Buy when RSI crosses 50 while price is above EMA 50."""
+    if len(df) < 50:
+        return 'NEUTRAL'
 
-    return 'HOLD'
+    current = df.iloc[-1]
+    previous = df.iloc[-2]
+
+    # BUY: Above EMA 50 and RSI crossing UP the 50 mark
+    if current['close'] > current['ema50'] and previous['rsi'] < 50 <= current['rsi']:
+        return 'BUY'
+
+    # SELL: Below EMA 50 or RSI crossing DOWN the 50 mark
+    if current['close'] < current['ema50'] or previous['rsi'] > 50 >= current['rsi']:
+        return 'SELL'
+
+    return 'NEUTRAL'
